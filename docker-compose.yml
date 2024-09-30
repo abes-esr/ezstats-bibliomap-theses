@@ -66,7 +66,7 @@ services:
                         BBH_ENRICHER_PORT: 27777
                         BBH_NO_DEMO:     "" # demo is activated
                         BBH_STREAMNAMES: "TDM" # default streams are for the demo
-                        BBH_STREAMPATHS: "/opt/pod/ezstats-bibliomap-theses/logs/rotate.log"
+                        BBH_STREAMPATHS: "/app/tmp/access-rotated.log"
                         BBH_LOG_FOLDER: ${BBH_LOG_FOLDER}
                         NODE_APP_INSTANCE: ${NODE_APP_INSTANCE}
                 working_dir: /app
@@ -74,7 +74,7 @@ services:
                 stdin_open: true  # to be able to use CTRL+C to stop the debug
                 #restart: unless-stopped
                 volumes :
-                        - /opt/pod/theses-docker/volumes/theses-rp/log:/opt/pod/ezstats-bibliomap-theses/logs
+                        - /opt/pod/theses-docker/volumes/theses-rp/log:/app/tmp
 
         ezpaarse:
                 container_name: ezpaarse
