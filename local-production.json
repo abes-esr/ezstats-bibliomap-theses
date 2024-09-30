@@ -1,0 +1,10 @@
+{
+  "ezpaarse": {
+    "headers": {
+      "ezPAARSE-Buffer-Size": 0,
+      "Force-Parser": "thesesfr",
+      "ezPAARSE-Filter-Redirects": "false",
+      "Log-Format-apache": "%h %l %u %t \"%r\" %>s %b \"%{Referer}<.*>\" \"%{User-Agent}<.*>\" \"%{Shib-Identity-Provider}<.*>\" \"%{eppn}<.*>\" \"%{primary-affiliation}<.*>\" \"%{supannEtablissement}<.*>\""
+    }
+  }
+}

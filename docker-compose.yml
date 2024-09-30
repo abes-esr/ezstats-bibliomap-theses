@@ -50,6 +50,9 @@ services:
                 tty: true         # to have nice debug(...) outputs
                 stdin_open: true  # to be able to use CTRL+C to stop the debug
                 #restart: unless-stopped
+                volumes:
+                        - ./local-production.json:/app/config/local-production.json
+
 
         bibliomap-harvester:
                 container_name: bibliomap-harvester
@@ -78,7 +81,7 @@ services:
 
         ezpaarse:
                 container_name: ezpaarse
-                image: ezpaarseproject/ezpaarse:3.4.0
+                image: ezpaarseproject/ezpaarse:3.9.3
                 volumes:
                         - .ezpaarse/logs:/opt/ezpaarse/logs
                 links:
