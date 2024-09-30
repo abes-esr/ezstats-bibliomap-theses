@@ -52,7 +52,7 @@ services:
                 #restart: unless-stopped
 
         bibliomap-harvester:
-                container_name: bibliomap-harvester
+                Maj container_name: bibliomap-harvester
                 image: ezpaarseproject/bibliomap-harvester:4.0.3
                 links:
                         - bibliomap-enricher
@@ -66,13 +66,15 @@ services:
                         BBH_ENRICHER_PORT: 27777
                         BBH_NO_DEMO:     "" # demo is activated
                         BBH_STREAMNAMES: "TDM" # default streams are for the demo
-                        BBH_STREAMPATHS: "/app/demo-logs/istex/istex.log"
+                        BBH_STREAMPATHS: "/app/tmp/access-rotated.log"
                         BBH_LOG_FOLDER: ${BBH_LOG_FOLDER}
                         NODE_APP_INSTANCE: ${NODE_APP_INSTANCE}
                 working_dir: /app
                 tty: true         # to have nice debug(...) outputs
                 stdin_open: true  # to be able to use CTRL+C to stop the debug
                 #restart: unless-stopped
+                volumes :
+                        - /opt/pod/theses-docker/volumes/theses-rp/log:/opt/pod/ezstats-bibliomap-theses/logs
 
         ezpaarse:
                 container_name: ezpaarse
