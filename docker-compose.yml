@@ -52,7 +52,7 @@ services:
                 #restart: unless-stopped
 
         bibliomap-harvester:
-                Maj container_name: bibliomap-harvester
+                container_name: bibliomap-harvester
                 image: ezpaarseproject/bibliomap-harvester:4.0.3
                 links:
                         - bibliomap-enricher
