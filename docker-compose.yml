@@ -19,8 +19,6 @@ services:
                         BBV_LISTEN_PORT: 50197 # web server
                 volumes:
                         - ./config.local.js:/app/config.local.js
-                        - ./themes/logo_abes.svg:/app/themes/istex/images/logo.svg
-                        - ./themes/theses:/app/themes/theses/
                 working_dir: /app
                 tty: true         # to have nice debug(...) outputs
                 stdin_open: true  # to be able to use CTRL+C to stop the debug
