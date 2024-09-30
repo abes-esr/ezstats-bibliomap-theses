@@ -81,7 +81,7 @@ services:
 
         ezpaarse:
                 container_name: ezpaarse
-                image: ezpaarseproject/ezpaarse:3.9.3
+                image: ezpaarseproject/ezpaarse:3.4.0
                 volumes:
                         - .ezpaarse/logs:/opt/ezpaarse/logs
                 links:
