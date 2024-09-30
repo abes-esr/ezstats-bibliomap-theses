@@ -25,7 +25,7 @@ services:
                 stdin_open: true  # to be able to use CTRL+C to stop the debug
                 ports:
                         - 50200:50197
-                        - 27779:27779
+                        - 27800:27779
                 #restart: unless-stopped
 
         bibliomap-enricher:
