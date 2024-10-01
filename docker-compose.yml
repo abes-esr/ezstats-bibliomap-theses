@@ -14,17 +14,17 @@ services:
                         BBV_INDEX: ${BBV_INDEX}
                         BBV_JSFILE: ${BBV_JSFILE}
                         BBV_LISTEN_ENRICHER_HOST: "0.0.0.0"
-                        BBV_LISTEN_ENRICHER_PORT: 27800
+                        BBV_LISTEN_ENRICHER_PORT: 27779
                         BBV_LISTEN_HOST: "0.0.0.0"
-                        BBV_LISTEN_PORT: 50200 # web server
+                        BBV_LISTEN_PORT: 50197 # web server
                 volumes:
                         - ./config.local.js:/app/config.local.js
                 working_dir: /app
                 tty: true         # to have nice debug(...) outputs
                 stdin_open: true  # to be able to use CTRL+C to stop the debug
                 ports:
-                        - 50200:50200
-                        - 27800:27800
+                        - 50197:50197
+                        - 27779:27779
                 #restart: unless-stopped
 
         bibliomap-enricher:
@@ -41,9 +41,9 @@ services:
                         DEBUG: ${DEBUG}
                         BBE_EZPAARSE_URL: "http://ezpaarse:59599"
                         BBE_LISTEN_HARVESTER_HOST: "0.0.0.0"
-                        BBE_LISTEN_HARVESTER_PORT: 27801
+                        BBE_LISTEN_HARVESTER_PORT: 27777
                         BBE_BROADCAST_VIEWER_HOST: "bibliomap-viewer"
-                        BBE_BROADCAST_VIEWER_PORT: 27800
+                        BBE_BROADCAST_VIEWER_PORT: 27779
                         NODE_APP_INSTANCE: ${NODE_APP_INSTANCE}
                 working_dir: /app
                 tty: true         # to have nice debug(...) outputs
@@ -65,7 +65,7 @@ services:
                         NODE_ENV: "production"
                         DEBUG: ${DEBUG}
                         BBH_ENRICHER_HOST: "bibliomap-enricher"
-                        BBH_ENRICHER_PORT: 27801
+                        BBH_ENRICHER_PORT: 27777
                         BBH_NO_DEMO:     "" # demo is activated
                         BBH_STREAMNAMES: "TDM" # default streams are for the demo
                         BBH_STREAMPATHS: "/app/tmp/access-rotated.log"
@@ -94,7 +94,7 @@ services:
                 tty: true         # to have nice debug(...) outputs
                 stdin_open: true  # to be able to use CTRL+C to stop the container
                 ports:
-                        - 60000:60000
+                        - 59599:59599
                 depends_on:
                         - ezpaarse_db
                 #restart: unless-stopped
