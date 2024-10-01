@@ -68,7 +68,7 @@ services:
                         BBH_ENRICHER_HOST: "bibliomap-enricher"
                         BBH_ENRICHER_PORT: 27777
                         BBH_NO_DEMO:     "" # demo is activated
-                        BBH_STREAMNAMES: "INSB" # default streams are for the demo
+                        BBH_STREAMNAMES: "theses" # default streams are for the demo
                         BBH_STREAMPATHS: "/app/tmp/access-rotated.log"
                         BBH_LOG_FOLDER: ${BBH_LOG_FOLDER}
                         NODE_APP_INSTANCE: ${NODE_APP_INSTANCE}

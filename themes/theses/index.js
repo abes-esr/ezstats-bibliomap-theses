@@ -2,9 +2,9 @@
 
 const legendData = [
   {
-    name: 'INSB',
+    name: 'theses',
     color: '#9c126d',
-    logo: '/themes/theses/images/bibcnrs-logo.svg',
+    logo: '/themes/theses/images/logo.svg',
     link: 'https://bib.cnrs.fr/category/biologie/',
     desc: {
       fr: 'Biologie',
