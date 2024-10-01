@@ -39,7 +39,7 @@ services:
                         no_proxy: ${no_proxy}
                         NODE_ENV: "production"
                         DEBUG: ${DEBUG}
-                        BBE_EZPAARSE_URL: "http://ezpaarse:59599"
+                        BBE_EZPAARSE_URL: "http://diplotaxis6-prod.v102.abes.fr:59599"
                         BBE_LISTEN_HARVESTER_HOST: "0.0.0.0"
                         BBE_LISTEN_HARVESTER_PORT: 27777
                         BBE_BROADCAST_VIEWER_HOST: "bibliomap-viewer"
