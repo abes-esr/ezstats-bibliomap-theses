@@ -11,7 +11,7 @@ services:
                         no_proxy: ${no_proxy}
                         NODE_ENV: "production"
                         DEBUG: ${DEBUG}
-                        BBV_INDEX: ${BBV_INDEX}
+                        BBV_INDEX: "theses"
                         BBV_JSFILE: ${BBV_JSFILE}
                         BBV_LISTEN_ENRICHER_HOST: "0.0.0.0"
                         BBV_LISTEN_ENRICHER_PORT: 27779
@@ -19,6 +19,7 @@ services:
                         BBV_LISTEN_PORT: 50197 # web server
                 volumes:
                         - ./config.local.js:/app/config.local.js
+                        - ./themes/theses/:/app/themes/theses/
                 working_dir: /app
                 tty: true         # to have nice debug(...) outputs
                 stdin_open: true  # to be able to use CTRL+C to stop the debug
