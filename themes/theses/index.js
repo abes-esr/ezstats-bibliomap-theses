@@ -7,8 +7,8 @@ const legendData = [
     logo: '/themes/theses/images/logo.svg',
     link: 'https://bib.cnrs.fr/category/biologie/',
     desc: {
-      fr: 'Biologie',
-      en: 'Biology',
+      fr: 'thèses françaises',
+      en: 'thèses françaises',
     },
   },
 ];
