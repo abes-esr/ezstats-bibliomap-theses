@@ -87,6 +87,3 @@ docker-compose up -d
 ```
 
 Cela permettra de récupérer les dernières modifications et de redémarrer l'application avec la configuration mise à jour.
-
-## Licence
-Ce projet est sous licence MIT. Veuillez consulter le fichier LICENSE pour plus de détails.
