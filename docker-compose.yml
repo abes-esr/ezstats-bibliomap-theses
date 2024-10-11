@@ -20,7 +20,9 @@ services:
                 volumes:
                         - ./config.local.js:/app/config.local.js
                         - ./themes/theses/:/app/themes/theses/
-                working_dir: /app
+                        - ./public/js/init_composant.js:/app/public/js/init_composant.js
+                        - ./themes/app/components/legend.html.twig:/app/themes/app/components/legend.html.twig
+
                 tty: true         # to have nice debug(...) outputs
                 stdin_open: true  # to be able to use CTRL+C to stop the debug
                 ports:
