@@ -14,9 +14,9 @@ services:
                         BBV_INDEX: "theses"
                         BBV_JSFILE: ${BBV_JSFILE}
                         BBV_LISTEN_ENRICHER_HOST: "0.0.0.0"
-                        BBV_LISTEN_ENRICHER_PORT: 27779
+                        BBV_LISTEN_ENRICHER_PORT: ${BBV_LISTEN_ENRICHER_PORT}
                         BBV_LISTEN_HOST: "0.0.0.0"
-                        BBV_LISTEN_PORT: 50197 # web server
+                        BBV_LISTEN_PORT: ${BBV_LISTEN_PORT}
                 volumes:
                         - ./config.local.js:/app/config.local.js
                         - ./themes/theses/:/app/themes/theses/
@@ -26,8 +26,8 @@ services:
                 tty: true         # to have nice debug(...) outputs
                 stdin_open: true  # to be able to use CTRL+C to stop the debug
                 ports:
-                        - 50197:50197
-                        - 27779:27779
+                        - ${BBV_LISTEN_PORT}:${BBV_LISTEN_PORT}
+                        - ${BBV_LISTEN_ENRICHER_PORT}:${BBV_LISTEN_ENRICHER_PORT}
                 restart: unless-stopped
 
         bibliomap-enricher:
@@ -42,11 +42,11 @@ services:
                         no_proxy: ${no_proxy}
                         NODE_ENV: "production"
                         DEBUG: ${DEBUG}
-                        BBE_EZPAARSE_URL: "http://ezpaarse:59599"
+                        BBE_EZPAARSE_URL: "http://ezpaarse:${EZPAARSE_PORT}"
                         BBE_LISTEN_HARVESTER_HOST: "0.0.0.0"
-                        BBE_LISTEN_HARVESTER_PORT: 27777
+                        BBE_LISTEN_HARVESTER_PORT: ${BBE_LISTEN_HARVESTER_PORT}
                         BBE_BROADCAST_VIEWER_HOST: "bibliomap-viewer"
-                        BBE_BROADCAST_VIEWER_PORT: 27779
+                        BBE_BROADCAST_VIEWER_PORT: ${BBV_LISTEN_ENRICHER_PORT}
                         NODE_APP_INSTANCE: ${NODE_APP_INSTANCE}
                 working_dir: /app
                 tty: true         # to have nice debug(...) outputs
@@ -70,8 +70,8 @@ services:
                         BBH_ENRICHER_HOST: "bibliomap-enricher"
                         BBH_ENRICHER_PORT: 27777
                         BBH_NO_DEMO:     "" # demo is activated
-                        BBH_STREAMNAMES: "theses" # default streams are for the demo
-                        BBH_STREAMPATHS: "/app/tmp/access-rotated.log"
+                        BBH_STREAMNAMES: ${BBH_STREAMNAMES}
+                        BBH_STREAMPATHS: ${BBH_STREAMPATHS}
                         BBH_LOG_FOLDER: ${BBH_LOG_FOLDER}
                         NODE_APP_INSTANCE: ${NODE_APP_INSTANCE}
                 working_dir: /app
@@ -93,11 +93,11 @@ services:
                         https_proxy: ${https_proxy}
                         no_proxy: ${no_proxy}
                         NODE_ENV: "production"
-                        EZPAARSE_MONGO_URL: "mongodb://ezpaarse_db:27017/ezpaarse"
+                        EZPAARSE_MONGO_URL: ${EZPAARSE_MONGO_URL}
                 tty: true         # to have nice debug(...) outputs
                 stdin_open: true  # to be able to use CTRL+C to stop the container
                 ports:
-                        - 59599:59599
+                        - ${EZPAARSE_PORT}:${EZPAARSE_PORT}
                 depends_on:
                         - ezpaarse_db
                 restart: unless-stopped
