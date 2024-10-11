@@ -26,7 +26,7 @@ services:
                 ports:
                         - 50197:50197
                         - 27779:27779
-                #restart: unless-stopped
+                restart: unless-stopped
 
         bibliomap-enricher:
                 container_name: bibliomap-enricher
@@ -49,7 +49,7 @@ services:
                 working_dir: /app
                 tty: true         # to have nice debug(...) outputs
                 stdin_open: true  # to be able to use CTRL+C to stop the debug
-                #restart: unless-stopped
+                restart: unless-stopped
                 volumes:
                         - ./local-production.json:/app/config/local-production.json
 
@@ -75,7 +75,7 @@ services:
                 working_dir: /app
                 tty: true         # to have nice debug(...) outputs
                 stdin_open: true  # to be able to use CTRL+C to stop the debug
-                #restart: unless-stopped
+                restart: unless-stopped
                 volumes :
                         - /opt/pod/theses-docker/volumes/theses-rp/log:/app/tmp
 
@@ -98,10 +98,10 @@ services:
                         - 59599:59599
                 depends_on:
                         - ezpaarse_db
-                #restart: unless-stopped
+                restart: unless-stopped
 
         ezpaarse_db:
                 container_name: ezpaarse_db
                 image: mongo:3.4.1
                 command: --smallfiles
-                #restart: unless-stopped
+                restart: unless-stopped
