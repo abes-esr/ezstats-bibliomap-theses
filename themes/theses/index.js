@@ -4,13 +4,14 @@ const legendData = [
   {
     name: 'theses',
     color: '#9c126d',
-    logo: '/themes/theses/images/logo.svg',
-    link: 'https://bib.cnrs.fr/category/biologie/',
+    logo: '/themes/theses/images/logo.png',
+    link: 'https://theses.fr/',
     desc: {
       fr: 'thèses françaises',
       en: 'thèses françaises',
     },
   },
+
 ];
 
 /**
