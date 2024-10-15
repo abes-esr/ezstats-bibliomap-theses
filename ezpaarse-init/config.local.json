@@ -1,0 +1,10 @@
+{
+  "EZPAARSE_MIDDLEWARES": [
+    "filter",
+    "parser",
+    "deduplicator",
+    "geolocalizer",
+    "qualifier",
+    "anonymizer"
+  ]
+}
