@@ -68,7 +68,7 @@ services:
                         NODE_ENV: "production"
                         DEBUG: ${DEBUG}
                         BBH_ENRICHER_HOST: "bibliomap-enricher"
-                        BBH_ENRICHER_PORT: 27777
+                        BBH_ENRICHER_PORT: ${BBE_LISTEN_HARVESTER_PORT}
                         BBH_NO_DEMO:     "" # demo is activated
                         BBH_STREAMNAMES: ${BBH_STREAMNAMES}
                         BBH_STREAMPATHS: ${BBH_STREAMPATHS}
