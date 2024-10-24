@@ -2,13 +2,13 @@
 
 const legendData = [
   {
-    name: 'theses',
+    name: 'theses.fr',
     color: '#9c126d',
     logo: '/themes/theses/images/logo.png',
     link: 'https://theses.fr/',
     desc: {
-      fr: 'thèses françaises',
-      en: 'thèses françaises',
+      fr: 'thèses de doctorat françaises',
+      en: 'French doctoral theses',
     },
   },
 
