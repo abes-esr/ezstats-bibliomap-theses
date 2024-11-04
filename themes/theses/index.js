@@ -2,7 +2,7 @@
 
 const legendData = [
   {
-    name: 'theses.fr',
+    name: 'thesesfr',
     color: '#9c126d',
     logo: '/themes/theses/images/logo.png',
     link: 'https://theses.fr/',
