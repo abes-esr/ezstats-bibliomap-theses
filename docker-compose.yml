@@ -1,9 +1,6 @@
-version: '3'
-
 services:
 
         bibliomap-viewer:
-                container_name: bibliomap-viewer
                 image: ezpaarseproject/bibliomap-viewer:5.1.6
                 environment:
                         http_proxy:  ${http_proxy}
@@ -31,7 +28,6 @@ services:
                 restart: unless-stopped
 
         bibliomap-enricher:
-                container_name: bibliomap-enricher
                 image: ezpaarseproject/bibliomap-enricher:4.1.1
                 links:
                         - bibliomap-viewer
@@ -57,7 +53,6 @@ services:
 
 
         bibliomap-harvester:
-                container_name: bibliomap-harvester
                 image: ezpaarseproject/bibliomap-harvester:4.0.3
                 links:
                         - bibliomap-enricher
@@ -82,7 +77,6 @@ services:
                         - /opt/pod/theses-docker/volumes/theses-rp/log:/app/tmp
 
         ezpaarse:
-                container_name: ezpaarse
                 image: ezpaarseproject/ezpaarse:3.10.2
                 volumes:
                         - .ezpaarse/logs:/opt/ezpaarse/logs
@@ -117,7 +111,6 @@ services:
 
 
         ezpaarse_db:
-                container_name: ezpaarse_db
                 image: mongo:3.6.23
                 command: --smallfiles
                 restart: unless-stopped
