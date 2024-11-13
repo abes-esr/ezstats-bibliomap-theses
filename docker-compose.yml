@@ -3,9 +3,9 @@ services:
         bibliomap-viewer:
                 image: ezpaarseproject/bibliomap-viewer:5.1.6
                 environment:
-                        http_proxy:  ${http_proxy}
-                        https_proxy: ${https_proxy}
-                        no_proxy: ${no_proxy}
+                        #http_proxy:  ${http_proxy}
+                        #https_proxy: ${https_proxy}
+                        #no_proxy: ${no_proxy}
                         NODE_ENV: "production"
                         DEBUG: ${DEBUG}
                         BBV_INDEX: "theses"
@@ -33,9 +33,9 @@ services:
                         - bibliomap-viewer
                         - ezpaarse
                 environment:
-                        http_proxy:  ${http_proxy}
-                        https_proxy: ${https_proxy}
-                        no_proxy: ${no_proxy}
+                        #http_proxy:  ${http_proxy}
+                        #https_proxy: ${https_proxy}
+                        #no_proxy: ${no_proxy}
                         NODE_ENV: "production"
                         DEBUG: ${DEBUG}
                         BBE_EZPAARSE_URL: "http://ezpaarse:${EZPAARSE_PORT}"
@@ -57,9 +57,9 @@ services:
                 links:
                         - bibliomap-enricher
                 environment:
-                        http_proxy:  ${http_proxy}
-                        https_proxy: ${https_proxy}
-                        no_proxy: ${no_proxy}
+                        #http_proxy:  ${http_proxy}
+                        #https_proxy: ${https_proxy}
+                        #no_proxy: ${no_proxy}
                         NODE_ENV: "production"
                         DEBUG: ${DEBUG}
                         BBH_ENRICHER_HOST: "bibliomap-enricher"
@@ -95,9 +95,9 @@ services:
                 links:
                         - ezpaarse_db
                 environment:
-                        http_proxy:  ${http_proxy}
-                        https_proxy: ${https_proxy}
-                        no_proxy: ${no_proxy}
+                        #http_proxy:  ${http_proxy}
+                        #https_proxy: ${https_proxy}
+                        #no_proxy: ${no_proxy}
                         NODE_ENV: "production"
                         EZPAARSE_MONGO_URL: ${EZPAARSE_MONGO_URL}
                 tty: true         # to have nice debug(...) outputs
