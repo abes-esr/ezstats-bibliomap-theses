@@ -104,7 +104,7 @@ function timer() {
  */
 function initUrlParameters() {
     minimap = getQueryVariable('m') || getQueryVariable('minimap');
-    const title = getQueryVariable('t') || getQueryVariable('title');
+    const title = 'true';
     const enabledCounters = getQueryVariable('c') || getQueryVariable('counters');
     const enabledEditors = getQueryVariable('editors') || getQueryVariable('ed');
     const description = 'false';
