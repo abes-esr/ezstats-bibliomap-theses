@@ -16,7 +16,7 @@ module.exports = function () {
     // Mapping IdP Renater : plus utilisé (2024)
     // let list_idp;
 
-    logger.info('Initializing ABES thesesfr middleware');
+    logger.info('Initializing ABES thesesfr middleware xxxxx v 18/11');
 
     const cacheEnabled = !/^false$/i.test(req.header('thesesfr-cache'));
 
