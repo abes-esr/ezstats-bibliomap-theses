@@ -13,10 +13,9 @@ module.exports = function () {
     const req = this.request;
 
     let list_code_court;
-    // Mapping IdP Renater : plus utilisé (2024)
-    // let list_idp;
+    let list_idp;
 
-    logger.info('Initializing ABES thesesfr middleware xxxxx v 18/11');
+    logger.info('Initializing ABES thesesfr middleware');
 
     const cacheEnabled = !/^false$/i.test(req.header('thesesfr-cache'));
 
@@ -44,13 +43,13 @@ module.exports = function () {
     let baseUrl = "https://theses.fr/api/v1/theses/recherche/";
 
     if (isNaN(baseWaitTime)) {
-        baseWaitTime = 100; //1000
+        baseWaitTime = 1000;
     }
     if (isNaN(maxTries)) {
         maxTries = 5;
     }
     if (isNaN(throttle)) {
-        throttle = 25; //100
+        throttle = 100;
     }
     if (isNaN(ttl)) {
         ttl = 3600 * 24 * 7;
@@ -105,11 +104,12 @@ module.exports = function () {
 
 
     /**
-     * Chargement des mappings Code Court avec le web service de Movies (accès interne Abes)
+     * Chargement des mappings Code Court et IdP avec les web services de Movies (accès interne Abes)
      *
      * https://movies.abes.fr/api-git/abes-esr/movies-api/subdir/v1/TH_liste_etabs_code_court.json
+     * https://movies.abes.fr/api-git/abes-esr/movies-api/subdir/v1/TH_liste_etabs_idp.json
      *
-     * Si l'url n'est pas accessible, le middleware utilisera la copie du mapping list_code_court.json
+     * Si l'url n'est pas accessible, le middleware utilisera la copie du mapping list_code_court.json et list_idp.json
      *
      */
     const promiseCodeCourt = new Promise((resolveCodeCourt, rejectCodeCourt) => {
@@ -143,8 +143,7 @@ module.exports = function () {
     });
 
 
-    // Mapping IdP Renater : plus utilisé (2024)
-    /*const promiseIdP = new Promise((resolveIdP, rejectIdP) => {
+    const promiseIdP = new Promise((resolveIdP, rejectIdP) => {
         //Chargement du mapping par appel au web service Movies
         const optionsIdP = {
             method: 'GET',
@@ -170,9 +169,9 @@ module.exports = function () {
             };
 
         });
-    });*/
+    });
 
-    //Chargement du mapping par fichier (list_code_court.json)
+    //Chargement du mapping par fichier (list_code_court.json ou list_idp.json)
     function chargeMapping(nomFichier, resolve, reject){
         fs.readFile(path.resolve(__dirname, nomFichier), 'utf8', (err, content) => {
             if (err) {
@@ -197,19 +196,15 @@ module.exports = function () {
                 return reject(new Error('failed to verify indexes for the cache of Thesesfr'));
             }
 
-            //Promise.all([promiseCodeCourt,promiseIdP])
-            Promise.all([promiseCodeCourt])
+            Promise.all([promiseCodeCourt,promiseIdP])
                 .then((promises) => {
                     list_code_court = promises[0];
-
-                    // Mapping IdP Renater : plus utilisé (2024)
-                    //list_idp = promises[1];
-
+                    list_idp = promises[1];
                     resolve(process);
                 })
                 .catch(function(err) {
-                    logger.error(`Thesesfr: erreur chargement du mapping : ${err}`);
-                    return reject(new Error('Thesesfr: erreur chargement du mapping'));
+                    logger.error(`Thesesfr: erreur chargement des mappings : ${err}`);
+                    return reject(new Error('Thesesfr: erreur chargement des mappings'));
                 });
         });
     });
@@ -420,7 +415,7 @@ module.exports = function () {
 
         // pour BilioMap affichage du codeCourt de l'étab dans platform_name qui permet le filtre par etab + dans le champ reservé au titre "libelé de l'étab complet -  discipline"
         ec['platform_name'] =   ec['codeCourt'];
-        ec['publication_title'] = ec['etabSoutenanceN'] + " - " +  ec['discipline'];
+        ec['publication_title'] = ec['etabSoutenanceN'] + "<br/>" +  ec['discipline'];
 
 
         /*
@@ -537,9 +532,8 @@ module.exports = function () {
                 }).join(" / ")
             }
 
-            // Mapping IdP Renater : plus utilisé (2024)
             //  Pour la consultation des theses soumises à identification
-            /*if (ec['Shib-Identity-Provider']) {
+            if (ec['Shib-Identity-Provider']) {
                 logger.info('IDP => '+ec['Shib-Identity-Provider']);
                 var etab = list_idp.results.bindings.find(elt => elt.idpRenater.value === ec['Shib-Identity-Provider']);
                 //logger.info('Etab trouve => '+util.inspect(etab, {showHidden: false, depth: null, colors: true}));
@@ -555,7 +549,7 @@ module.exports = function () {
                     ec['idp_etab_ppn'] = "Non trouvé";
                     ec['idp_etab_code_court'] = "Non trouvé";
                 }
-            }*/
+            }
         }
     }
 
