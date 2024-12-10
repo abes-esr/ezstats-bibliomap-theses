@@ -13,7 +13,6 @@ module.exports = function () {
     const req = this.request;
 
     let list_code_court;
-    let list_idp;
 
     logger.info('Initializing ABES thesesfr middleware');
 
@@ -90,7 +89,7 @@ module.exports = function () {
                     if (Object.keys(cachedDoc).length === 0) {
                         logger.warn('missed cache, doc from thesesfr est un objet vide pour ec.unitid ' + ec.unitid + ' ec.rtype ' + ec.rtype);
                     } else {
-                        logger.info('le doc pour enrichEc un ' + ec.rtype + ' provient du cache thesesfr');
+                        //logger.debug('le doc pour enrichEc un ' + ec.rtype + ' provient du cache thesesfr');
                         enrichEc(ec, cachedDoc);
                     }
                     return false;
@@ -104,12 +103,11 @@ module.exports = function () {
 
 
     /**
-     * Chargement des mappings Code Court et IdP avec les web services de Movies (accès interne Abes)
+     * Chargement des mappings Code Court avec le web service de Movies (accès interne Abes)
      *
      * https://movies.abes.fr/api-git/abes-esr/movies-api/subdir/v1/TH_liste_etabs_code_court.json
-     * https://movies.abes.fr/api-git/abes-esr/movies-api/subdir/v1/TH_liste_etabs_idp.json
      *
-     * Si l'url n'est pas accessible, le middleware utilisera la copie du mapping list_code_court.json et list_idp.json
+     * Si l'url n'est pas accessible, le middleware utilisera la copie du mapping list_code_court.json
      *
      */
     const promiseCodeCourt = new Promise((resolveCodeCourt, rejectCodeCourt) => {
@@ -142,36 +140,7 @@ module.exports = function () {
         });
     });
 
-
-    const promiseIdP = new Promise((resolveIdP, rejectIdP) => {
-        //Chargement du mapping par appel au web service Movies
-        const optionsIdP = {
-            method: 'GET',
-            json: true,
-            uri: `https://movies.abes.fr/api-git/abes-esr/movies-api/subdir/v1/TH_liste_etabs_idp.json`
-        };
-
-        request(optionsIdP, (errIdP, responseIdP, resultIdP) => {
-            //Si erreur, chargement du fichier list_idp.json, a la place
-            if (errIdP || responseIdP.statusCode !== 200) {
-                chargeMapping('list_idp.json', resolveIdP, rejectIdP);
-            };
-
-            if (!errIdP && responseIdP.statusCode == 200) {
-                if (Array.isArray(resultIdP.results.bindings)) {
-                    logger.info('Chargement du mapping IdP par web service OK');
-                    resolveIdP(resultIdP);
-                }
-                else {
-                    //Si erreur, chargement du fichier list_idp.json, a la place
-                    chargeMapping('list_idp.json', resolveIdP, rejectIdP);
-                }
-            };
-
-        });
-    });
-
-    //Chargement du mapping par fichier (list_code_court.json ou list_idp.json)
+    //Chargement du mapping par fichier (list_code_court.json)
     function chargeMapping(nomFichier, resolve, reject){
         fs.readFile(path.resolve(__dirname, nomFichier), 'utf8', (err, content) => {
             if (err) {
@@ -196,15 +165,14 @@ module.exports = function () {
                 return reject(new Error('failed to verify indexes for the cache of Thesesfr'));
             }
 
-            Promise.all([promiseCodeCourt,promiseIdP])
+            Promise.all([promiseCodeCourt])
                 .then((promises) => {
                     list_code_court = promises[0];
-                    list_idp = promises[1];
                     resolve(process);
                 })
                 .catch(function(err) {
-                    logger.error(`Thesesfr: erreur chargement des mappings : ${err}`);
-                    return reject(new Error('Thesesfr: erreur chargement des mappings'));
+                    logger.error(`Thesesfr: erreur chargement du mapping : ${err}`);
+                    return reject(new Error('Thesesfr: erreur chargement du mapping'));
                 });
         });
     });
@@ -227,8 +195,6 @@ module.exports = function () {
         let tries = 0;
         let docs;
 
-        //logger.info('dans onPacket avant le while');
-
         while (!docs) {
             if (++tries > maxAttempts) {
                 const err = new Error(`Failed to query Thesesfr ${maxAttempts} times in a row`);
@@ -236,7 +202,6 @@ module.exports = function () {
             }
 
             try {
-                //logger.info('avant query');
                 docs = yield query(unitids);
             } catch (e) {
                 logger.error(`Thesesfr: ${e.message}`);
@@ -265,7 +230,7 @@ module.exports = function () {
             }
 
             if (doc) {
-                logger.info('le doc pour enrichEc un ' + ec.rtype + ' provient de onPacket thesesfr');
+                //logger.debug('le doc pour enrichEc un ' + ec.rtype + ' provient de onPacket thesesfr');
                 enrichEc(ec, doc);
             }
 
@@ -275,16 +240,71 @@ module.exports = function () {
     }
 
     /**
+     * Enrich an EC using a forged result (absent from quey response)
+     * @param {Object} ec the EC to be enriched
+     * @param {Object} result the forged document used to enrich the EC
+     */
+    function enrichForgedEc(ec, result) {
+        /** version Check EC qualification : middleware qualifier-other + middleware qualifer */
+        /*    ec.rtype = 'OTHER'*/
+
+      /** version rtype OTHER et tous les champs 'NOT_FOUND'*/
+        ec['rtype']='OTHER';
+        ec['nnt'] ='NOT_FOUND';
+        ec['numSujet'] ='NOT_FOUND';
+        ec['etabSoutenanceN'] ='NOT_FOUND';
+        ec['etabSoutenancePpn'] ='NOT_FOUND';
+        ec['codeCourt'] ='NOT_FOUND';
+        ec['dateSoutenance'] ='NOT_FOUND';
+        ec['anneeSoutenance'] ='NOT_FOUND';
+        ec['dateInscription'] ='NOT_FOUND';
+        ec['anneeInscription'] ='NOT_FOUND';
+        ec['statut'] ='NOT_FOUND';
+        ec['discipline'] ='NOT_FOUND';
+        ec['ecoleDoctoraleN'] ='NOT_FOUND';
+        ec['ecoleDoctoralePpn'] ='NOT_FOUND';
+        ec['partenaireRechercheN'] ='NOT_FOUND';
+        ec['partenaireRecherchePpn'] ='NOT_FOUND';
+        ec['auteurN'] ='NOT_FOUND';
+        ec['auteurPpn'] ='NOT_FOUND';
+        ec['directeurN'] ='NOT_FOUND';
+        ec['directeurPpn'] ='NOT_FOUND';
+        ec['presidentN'] ='NOT_FOUND';
+        ec['presidentPpn'] ='NOT_FOUND';
+        ec['rapporteursN'] ='NOT_FOUND';
+        ec['rapporteursPpn'] ='NOT_FOUND';
+        ec['membresN'] ='NOT_FOUND';
+        ec['membresPpn'] ='NOT_FOUND';
+        ec['personneN'] ='NOT_FOUND';
+        ec['personnePpn'] ='NOT_FOUND';
+        ec['organismeN'] ='NOT_FOUND';
+        ec['organismePpn'] ='NOT_FOUND';
+        ec['idp_etab_nom'] ='NOT_FOUND';
+        ec['idp_etab_ppn'] ='NOT_FOUND';
+        ec['idp_etab_code_court'] ='NOT_FOUND';
+        ec['platform_name'] ='NOT_FOUND';
+        ec['publication_title'] ='NOT_FOUND';
+
+    }
+
+
+    /**
      * Enrich an EC using the result of a query
      * @param {Object} ec the EC to be enriched
      * @param {Object} result the document used to enrich the EC
      */
 
-    /* ERM header cible
-  	# -H "Output-Fields: +nnt, +numSujet, +doiThese, +etabSoutenanceN, +etabSoutenancePpn, +codeCourt, +dateSoutenance, +anneeSoutenance, +dateInscription, +anneeInscription, +statut, +accessible, +source, +discipline, +domaine, +langue, +ecoleDoctoraleN, +ecoleDoctoralePpn, +partenaireRechercheN, +partenaireRecherchePpn, +cotutelleN, +cotutellePpn, +auteurN, +auteurPpn, +directeurN, +directeurPpn, +presidentN, +presidentPpn, +rapporteursN, +rapporteursPpn, +membresN, +membresPpn, +personneN, +personnePpn, +organismeN, +organismePpn, +idp_etab_nom, +idp_etab_ppn, +idp_etab_code_court, +platform_name " \
-     */
     function enrichEc(ec, result) {
-        logger.info(' debut enrich ');
+
+        //TMX détecter si doc est naturel ou genéré avec missing:true
+        if (result.missing)  {
+            //logger.debug('le doc '+result.id+' pour enrichEc un ' + ec.rtype + ' a été forgé car absent de la réponse API');
+            enrichForgedEc(ec, result);
+            return; //on sort
+        }
+
+
+
         /*
          ******Tronc commun*****
          */
@@ -293,10 +313,13 @@ module.exports = function () {
             ec['etabSoutenanceN'] = result.etabSoutenanceN;
         }
 
-        // etabSoutenancePpn > obligatoire
+        // etabSoutenancePpn > obligatoire mais des trous (dans les thèses non passées par STAR) => 'NR' qd pas de PPN
         if (result.etabSoutenancePpn) {
             ec['etabSoutenancePpn'] = result.etabSoutenancePpn;
+        } else {
+            ec['etabSoutenancePpn'] = 'NR';
         }
+
 
         // codeCourt > obligatoire > via Api Movies
 
@@ -532,24 +555,6 @@ module.exports = function () {
                 }).join(" / ")
             }
 
-            //  Pour la consultation des theses soumises à identification
-            if (ec['Shib-Identity-Provider']) {
-                logger.info('IDP => '+ec['Shib-Identity-Provider']);
-                var etab = list_idp.results.bindings.find(elt => elt.idpRenater.value === ec['Shib-Identity-Provider']);
-                //logger.info('Etab trouve => '+util.inspect(etab, {showHidden: false, depth: null, colors: true}));
-
-                if (etab) {
-                    ec['idp_etab_nom'] = etab.etabLabel.value;
-                    ec['idp_etab_ppn'] = etab.ppn.value;
-                    ec['idp_etab_code_court'] = etab.codeEtab.value;
-                    //logger.info('Ok pour : ' + etab.etabLabel.value);
-                }
-                else {
-                    ec['idp_etab_nom'] = "Non trouvé";
-                    ec['idp_etab_ppn'] = "Non trouvé";
-                    ec['idp_etab_code_court'] = "Non trouvé";
-                }
-            }
         }
     }
 
@@ -578,11 +583,13 @@ module.exports = function () {
         }
 
         //ACT TODO : traiter les PPN
+
+        const uniques = new Set(nnts.concat(numSujets));
+
         const query = `?nombre=200&q=${subQueries.join(' OR ')}`;
-        logger.info(' query ==> ' + query);
+        //logger.debug(' query ==> ' + query);
 
         const userAgent = 'ezPAARSE (https://readmetrics.org; mailto:ezteam@couperin.org)';
-        //const userAgent = 'toto';
 
         return new Promise((resolve, reject) => {
             const options = {
@@ -593,6 +600,8 @@ module.exports = function () {
                 },
                 uri: `${baseUrl}${query}`
             };
+
+            let pseudoResponse =  new Set();
 
             request(options, (err, response, result) => {
                 if (err) {
@@ -614,7 +623,36 @@ module.exports = function () {
                     return reject(new Error('invalid response'));
                 }
 
-                return resolve(result.theses);
+
+                const uniqueSize=Number(uniques.size);
+                const respondedSize=Number(result.totalHits);
+                const missingSize= uniqueSize-respondedSize;
+
+                if (missingSize > 0) {
+
+                    const responseIds = result.theses.map(o => o.id);
+                    const responseAPI = new Set(responseIds);
+
+                    //ES2015 only
+                    //const diffSet=uniques.difference(responseAPI);
+
+                    //ECMAScript 6
+                    const diffSet = new Set([...uniques].filter(x => !responseAPI.has(x)));
+
+                    pseudoResponse =  new Set();
+
+
+                    for (let value of diffSet.values()) {
+
+                        //TMX créer une pseudeo-réponse qui sera ajoutée ensuite à result.theses[]
+                        let pseudoObj = { id:value, missing: true };
+                        pseudoObj['id']=value;
+                        pseudoResponse.add(pseudoObj);
+                    }
+
+                }
+
+                return resolve(result.theses.concat([...pseudoResponse]));
             });
         });
     }

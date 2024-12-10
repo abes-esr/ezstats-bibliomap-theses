@@ -66,14 +66,14 @@ module.exports = function () {
             //TMX cas ou il y a un objet : dans le cas de thesesfr-organismes il sera forcemment vide {} = convention identique aux autres middlewares
                 if (cachedDoc && (typeof cachedDoc === 'object')) {
 
-                    logger.info ('cached doc est un objet');
+                    //logger.debug ('cached doc est un objet');
 
                     if(Object.keys(cachedDoc).length === 0){
                             logger.warn('missed cache, doc from thesesfr-organisme est un objet vide pour ec.unitid '+ec.unitid+ ' ec.rtype '+ec.rtype);
                      }
                     else {
-                    logger.info('le doc pour enrichEc un '+ec.rtype+' provient du cache thesesfr-organisme');
-                    logger.info('cached doc est un objet NON VIDE avec '+ Object.keys(cachedDoc).length +' propriétés');
+                    //logger.debug('le doc pour enrichEc un '+ec.rtype+' provient du cache thesesfr-organisme');
+                    //logger.debug('cached doc est un objet NON VIDE avec '+ Object.keys(cachedDoc).length +' propriétés');
 
                      enrichEc(ec, cachedDoc);
                      return false;
@@ -83,13 +83,11 @@ module.exports = function () {
             //TMX cas "normal" dans thesesfr-organisme la réponse est une chaine de texte, deux sous-cas : vide ou pas vide
                 if (cachedDoc && typeof cachedDoc !== 'object') {
 
-                    //logger.info ('cached doc différent de objet : '+typeof cachedDoc);
-
                     if(cachedDoc.length === 0){
                             logger.warn('missed cache, doc from thesesfr-organisme DIFFERENT de objet mais taille 0 pour ec.unitid '+ec.unitid+ ' ec.rtype '+ec.rtype);
                      }
                     else {
-                    logger.info('le doc pour enrichEc un '+ec.rtype+' provient du cache thesesfr-organisme');
+                    //logger.debug('le doc pour enrichEc un '+ec.rtype+' provient du cache thesesfr-organisme');
                      enrichEc(ec, cachedDoc);
                      return false;
                     }
@@ -108,7 +106,7 @@ module.exports = function () {
         // Verify cache indices and time-to-live before starting
         cache.checkIndexes(ttl, function (err) {
             if (err) {
-                logger.error(`Thesesfr: failed to verify indexes : ${err}`);
+                logger.error(`Thesesfr:  failed to verify indexes : ${err}`);
                 return reject(new Error('failed to verify indexes for the cache of Thesesfr'));
             }
 
@@ -136,8 +134,6 @@ module.exports = function () {
             let tries = 0;
             let doc;
 
-            //logger.info('dans onPacket thesesfr-organisme avant le while pour unitid '+id+' ec.rtype'+ec.rtype);
-
             while (!doc) {
                 if (++tries > maxAttempts) {
                     const err = new Error(`Failed to query Thesesfr from thesesfr-organisme ${maxAttempts} times in a row`);
@@ -145,10 +141,9 @@ module.exports = function () {
                 }
 
                 try {
-                    //logger.info('avant query dans thesesfr-organisme');
                     if (ec.rtype === 'RECORD') {
                         doc = yield query(id);
-                        logger.info('le doc pour enrichEc un '+ec.rtype+' provient de onPacket thesesfr-organisme');
+                        //logger.debug('le doc pour enrichEc un '+ec.rtype+' provient de onPacket thesesfr-organisme');
                     }
                     else
                     {
@@ -173,26 +168,30 @@ module.exports = function () {
                 report.inc('thesesfr-organisme erreur yield cacheResult ', 'thesesfr-cache-fails');
             }
 
+
+
             if (doc && (typeof doc === 'object')) {
 
-                //logger.info ('la réponse de onPacket query est un objet');
-
-
                 if(Object.keys(doc).length === 0){
-                    //logger.info('objet réponse est VIDE  ');
+                  //NOP
                 }
                 else {
-                    logger.info ('CAS IMPREVU !!! objet réponse est un objet NON VIDE avec '+ Object.keys(doc).length +' propriétés');
+                    logger.warn ('CAS IMPREVU !!! objet réponse est un objet NON VIDE avec '+ Object.keys(doc).length +' propriétés');
 
                 }
             }
 
+            if (doc && doc.missing) {
+                //logger.debug(`Missing data for ID ${id}. Enriching with default values.`);
+                enrichEc(ec, doc);
+            }
+
+
             if (doc && typeof doc !== 'object') {
 
-                //logger.info ('la réponse de onPacket query différent de objet : '+typeof doc);
-
                 if(doc.length === 0){
-                    logger.info('objet réponse DIFFERENT de objet mais taille 0 pour id '+id);
+                    //logger.debug('objet réponse DIFFERENT de objet mais taille 0 pour id '+id);
+                    //NOP
                 }
                 else {
 
@@ -205,25 +204,81 @@ module.exports = function () {
         }
 
     }
+
+
+    /**
+     * Enrich an EC using a forged result (absent from quey response)
+     * @param {Object} ec the EC to be enriched
+     * @param {Object} result the forged document used to enrich the EC
+     */
+    function enrichForgedEc(ec, result) {
+        /** version Check EC qualification : middleware qualifier-other + middleware qualifer */
+        /*    ec.rtype = 'OTHER'*/
+
+        /** version rtype OTHER et tous les champs 'NOT_FOUND'*/
+        ec['rtype']='OTHER';
+
+        ec['nnt'] ='NOT_FOUND';
+        ec['numSujet'] ='NOT_FOUND';
+        ec['etabSoutenanceN'] ='NOT_FOUND';
+        ec['etabSoutenancePpn'] ='NOT_FOUND';
+        ec['codeCourt'] ='NOT_FOUND';
+        ec['dateSoutenance'] ='NOT_FOUND';
+        ec['anneeSoutenance'] ='NOT_FOUND';
+        ec['dateInscription'] ='NOT_FOUND';
+        ec['anneeInscription'] ='NOT_FOUND';
+        ec['statut'] ='NOT_FOUND';
+        ec['discipline'] ='NOT_FOUND';
+        ec['ecoleDoctoraleN'] ='NOT_FOUND';
+        ec['ecoleDoctoralePpn'] ='NOT_FOUND';
+        ec['partenaireRechercheN'] ='NOT_FOUND';
+        ec['partenaireRecherchePpn'] ='NOT_FOUND';
+        ec['auteurN'] ='NOT_FOUND';
+        ec['auteurPpn'] ='NOT_FOUND';
+        ec['directeurN'] ='NOT_FOUND';
+        ec['directeurPpn'] ='NOT_FOUND';
+        ec['presidentN'] ='NOT_FOUND';
+        ec['presidentPpn'] ='NOT_FOUND';
+        ec['rapporteursN'] ='NOT_FOUND';
+        ec['rapporteursPpn'] ='NOT_FOUND';
+        ec['membresN'] ='NOT_FOUND';
+        ec['membresPpn'] ='NOT_FOUND';
+        ec['personneN'] ='NOT_FOUND';
+        ec['personnePpn'] ='NOT_FOUND';
+        ec['organismeN'] ='NOT_FOUND';
+        ec['organismePpn'] ='NOT_FOUND';
+        ec['idp_etab_nom'] ='NOT_FOUND';
+        ec['idp_etab_ppn'] ='NOT_FOUND';
+        ec['idp_etab_code_court'] ='NOT_FOUND';
+        ec['platform_name'] ='NOT_FOUND';
+        ec['publication_title'] ='NOT_FOUND';
+
+    }
+
     /**
      * Enrich an EC using the result of a query
      * @param {Object} ec the EC to be enriched
      * @param {Object} result the document used to enrich the EC
      */
 
-    /* ERM header cible
- 	# -H "Output-Fields: +nnt, +numSujet, +doiThese, +etabSoutenanceN, +etabSoutenancePpn, +codeCourt, +dateSoutenance, +anneeSoutenance, +dateInscription, +anneeInscription, +statut, +accessible, +source, +discipline, +domaine, +langue, +ecoleDoctoraleN, +ecoleDoctoralePpn, +partenaireRechercheN, +partenaireRecherchePpn, +cotutelleN, +cotutellePpn, +auteurN, +auteurPpn, +directeurN, +directeurPpn, +presidentN, +presidentPpn, +rapporteursN, +rapporteursPpn, +membresN, +membresPpn, +personneN, +personnePpn, +organismeN, +organismePpn, +idp_etab_nom, +idp_etab_ppn, +idp_etab_code_court, +platform_name " \
-    */
     function enrichEc(ec, result) {
         if( result && (typeof result === 'object') && (Object.keys(result).length === 0)) {
-            logger.info ('result est un objet NON VIDE avec '+ Object.keys(result).length +' propriétés, contenu : '+result)
+            //logger.debug ('result est un objet NON VIDE avec '+ Object.keys(result).length +' propriétés, contenu : '+result)
+            //NOP
         }
+
+        if (result && result.missing)  {
+            //logger.debug('le doc '+result.id+' pour enrichEc un ' + ec.rtype + ' a été forgé car absent de la réponse API');
+            enrichForgedEc(ec, result);
+            return; //on sort
+        }
+
         //il s'agit d'un Organisme (PPN)
         if (result && (typeof result === 'string') && (result.length !== 0)) {
             ec['organismeN'] = result;
             ec['organismePpn'] = ec.unitid;
             ec.rtype = 'ORGANISME';
-            logger.info(' organisme enrichi ==> ' + ec['rtype'] + ' ' + ec['organismeN'] + ' ' +ec['organismePpn']);
+            //logger.debug(' organisme enrichi ==> ' + ec['rtype'] + ' ' + ec['organismeN'] + ' ' +ec['organismePpn']);
             ec['nnt']= 'sans objet';
             ec['numSujet']= 'sans objet';
             /*//doiThese > sans objet > à masquer tant que non présent dans l'API theses > supprimé provisoirement du header (champs pour la sortie)
@@ -307,10 +362,14 @@ module.exports = function () {
                     report.inc('thesesfr-organisme', 'thesesfr-query-fails');
                     return reject(new Error(`${response.statusCode} ${response.statusMessage}`));
                 }
+				
+				if ((response.statusCode === 200) && (!(Number(response.headers['content-length']) > 0))) {               
+                    report.inc('thesesfr-organisme', 'thesesfr-query-empty-response');
+                    return resolve({ missing: true });
+                }
 
                 if (!(Number(response.headers['content-length']) > 0)) {
                     report.inc('thesesfr-organisme', 'thesesfr-query-empty-response');
-                    //return reject(new Error('thesesfr-organism invalid response'));
                     return resolve({});
                 }
 
