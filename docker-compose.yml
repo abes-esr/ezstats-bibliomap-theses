@@ -22,6 +22,8 @@ services:
                         - ./themes/theses/:/app/themes/theses/
                         - ./public/js/init_composant.js:/app/public/js/init_composant.js
                         - ./themes/app/components/legend.html.twig:/app/themes/app/components/legend.html.twig
+                        - ./themes/app/locale/:/app/themes/app/locale/
+
 
                 tty: true         # to have nice debug(...) outputs
                 stdin_open: true  # to be able to use CTRL+C to stop the debug
