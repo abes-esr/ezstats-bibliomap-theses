@@ -1,5 +1,5 @@
 {
-  "description": "Bibliomap affiche les événements de consultation générés par une instance d'ezPAARSE en temps réel sur une carte. C'est un outil utile pour surveiller le trafic de votre ezproxy ou pour aider à porter le projet d'adoption d'ezPAARSE dans votre établissement.",
+  "description": "Consultations et téléchargements en direct des thèses de doctorat françaises référencées sur theses.fr.",
   "brand": "Connecté à",
   "tooltip": {
     "settings": "Paramètres",
@@ -13,7 +13,7 @@
     "map": "Fond de carte",
     "title": "Paramètres",
     "displayMiniMap": "Afficher la minimap",
-    "legendFilter": "Instituts à afficher",
+    "legendFilter": "Consultations à afficher",
     "selectAll": "Tout cocher",
     "selectNone": "Tout décocher",
     "displayReviews": "Afficher le nom complet de l'établissment et la discipline de la thèse",
